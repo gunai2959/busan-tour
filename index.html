@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부산 여행 - 명소 탐방</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #004499;
+            --accent: #ff6b35;
+            --bg-dark: #0f1419;
+            --bg-card: #1a2332;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b8c1;
+            --border: #2a3a52;
+            --success: #00d084;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a2840 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* 헤더 */
+        header {
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 40px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        /* 메인 컨테이너 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 필터 섹션 */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(0, 102, 204, 0.1);
+        }
+
+        /* 그리드 레이아웃 */
+        .attractions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .attraction-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .attraction-card:nth-child(1) { animation-delay: 0.1s; }
+        .attraction-card:nth-child(2) { animation-delay: 0.2s; }
+        .attraction-card:nth-child(3) { animation-delay: 0.3s; }
+        .attraction-card:nth-child(n+4) { animation-delay: 0.4s; }
+
+        .attraction-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 102, 204, 0.2);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .card-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-location {
+            font-size: 12px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            color: var(--text-primary);
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .card-info {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .card-info span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .view-btn {
+            padding: 6px 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 에러 상태 */
+        .error {
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            color: var(--accent);
+            margin: 40px 0;
+        }
+
+        /* 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 0;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .detail-value a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .detail-value a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        /* 페이지네이션 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 40px 0;
+        }
+
+        .pagination button {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagination button.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .search-box {
+                max-width: 100%;
+                margin: 0;
+            }
+
+            .attractions-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 16px;
+            }
+
+            .card-title {
+                font-size: 14px;
+            }
+
+            .modal-content {
+                max-width: 95%;
+            }
+        }
+
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🌊</div>
+                부산 여행
+            </div>
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="명소 검색..."
+                    aria-label="명소 검색"
+                >
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="container">
+        <!-- 필터 -->
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">모두 보기</button>
+            <button class="filter-btn" data-filter="popular">인기 명소</button>
+            <button class="filter-btn" data-filter="cultural">문화유산</button>
+            <button class="filter-btn" data-filter="nature">자연</button>
+        </div>
+
+        <!-- 명소 그리드 -->
+        <div id="attractionsContainer" class="attractions-grid">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination">
+            <button id="prevBtn" disabled>이전</button>
+            <span id="pageInfo" style="color: var(--text-secondary); align-self: center;"></span>
+            <button id="nextBtn">다음</button>
+        </div>
+    </div>
+
+    <!-- 상세 정보 모달 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="detailTitle"></div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="detailContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // 상태 관리
+        const state = {
+            attractions: [],
+            filteredAttractions: [],
+            currentPage: 1,
+            itemsPerPage: 12,
+            searchQuery: '',
+            loading: false,
+            error: null
+        };
+
+        // API 호출
+        async function fetchAttractions(pageNo = 1) {
+            state.loading = true;
+            state.error = null;
+            
+            try {
+                const response = await fetch(
+                    `/api/attractions?pageNo=${pageNo}&numOfRows=50`
+                );
+                
+                if (!response.ok) throw new Error('API 요청 실패');
+                
+                const data = await response.json();
+                
+                if (data.resultCode === '00') {
+                    state.attractions = data.items || [];
+                    state.filteredAttractions = state.attractions;
+                    renderAttractions();
+                } else {
+                    throw new Error(data.resultMsg || 'API 오류');
+                }
+            } catch (err) {
+                state.error = err.message;
+                console.error('에러:', err);
+                showError(err.message);
+            } finally {
+                state.loading = false;
+            }
+        }
+
+        // 렌더링
+        function renderAttractions() {
+            const container = document.getElementById('attractionsContainer');
+            
+            if (state.loading) {
+                container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+                return;
+            }
+
+            if (state.error) {
+                container.innerHTML = `<div class="error">⚠️ ${state.error}</div>`;
+                return;
+            }
+
+            const items = state.filteredAttractions;
+            const start = (state.currentPage - 1) * state.itemsPerPage;
+            const end = start + state.itemsPerPage;
+            const pageItems = items.slice(start, end);
+
+            if (pageItems.length === 0) {
+                container.innerHTML = '<div class="error">검색 결과가 없습니다.</div>';
+                return;
+            }
+
+            container.innerHTML = pageItems.map((item, idx) => `
+                <div class="attraction-card" style="animation-delay: ${(idx % 3) * 0.1}s">
+                    <div class="card-image">🏛️</div>
+                    <div class="card-content">
+                        <div class="card-location">${item.GUGUN_NM || '부산'}</div>
+                        <div class="card-title">${item.MAIN_TITLE || item.PLACE || '명소'}</div>
+                        <div class="card-subtitle">${item.SUBTITLE || item.TITLE || ''}</div>
+                        <div class="card-footer">
+                            <div class="card-info">
+                                <span>📍 ${(item.ADDR1 || '').substring(0, 20)}...</span>
+                            </div>
+                            <button class="view-btn" onclick="showDetail('${item.UC_SEQ}')">
+                                상세보기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            updatePagination(items.length);
+        }
+
+        // 페이지네이션 업데이트
+        function updatePagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / state.itemsPerPage);
+            document.getElementById('pageInfo').textContent = 
+                `${state.currentPage} / ${totalPages}`;
+            document.getElementById('prevBtn').disabled = state.currentPage === 1;
+            document.getElementById('nextBtn').disabled = state.currentPage === totalPages;
+        }
+
+        // 상세 정보 표시
+        async function showDetail(ucSeq) {
+            try {
+                const response = await fetch(`/api/attractions?contentId=${ucSeq}`);
+                const data = await response.json();
+                
+                if (data.resultCode === '00' && data.items && data.items[0]) {
+                    const item = data.items[0];
+                    
+                    document.getElementById('detailTitle').textContent = item.MAIN_TITLE || '명소 정보';
+                    document.getElementById('detailContent').innerHTML = `
+                        <div class="detail-section">
+                            <div class="detail-label">소재지</div>
+                            <div class="detail-value">${item.ADDR1 || '정보 없음'}</div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">설명</div>
+                            <div class="detail-value">${item.ITEMCNTNTS || item.SUBTITLE || '상세 설명이 없습니다.'}</div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">연락처</div>
+                            <div class="detail-value">${item.CNTCT_TEL || '정보 없음'}</div>
+                        </div>
+                        ${item.HOMEPAGE_URL ? `
+                            <div class="detail-section">
+                                <div class="detail-label">홈페이지</div>
+                                <div class="detail-value">
+                                    <a href="${item.HOMEPAGE_URL}" target="_blank">${item.HOMEPAGE_URL}</a>
+                                </div>
+                            </div>
+                        ` : ''}
+                        <div class="detail-section">
+                            <div class="detail-label">이용료</div>
+                            <div class="detail-value">${item.USAGE_AMOUNT || '정보 없음'}</div>
+                        </div>
+                        ${item.TRFC_INFO ? `
+                            <div class="detail-section">
+                                <div class="detail-label">교통정보</div>
+                                <div class="detail-value">${item.TRFC_INFO}</div>
+                            </div>
+                        ` : ''}
+                    `;
+                    
+                    document.getElementById('detailModal').classList.add('active');
+                }
+            } catch (err) {
+                alert('상세 정보를 불러올 수 없습니다.');
+            }
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        // 에러 표시
+        function showError(message) {
+            document.getElementById('attractionsContainer').innerHTML = 
+                `<div class="error">⚠️ ${message}</div>`;
+        }
+
+        // 검색
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            state.searchQuery = e.target.value.toLowerCase();
+            state.currentPage = 1;
+            
+            state.filteredAttractions = state.attractions.filter(item =>
+                (item.MAIN_TITLE?.toLowerCase().includes(state.searchQuery)) ||
+                (item.PLACE?.toLowerCase().includes(state.searchQuery)) ||
+                (item.ADDR1?.toLowerCase().includes(state.searchQuery))
+            );
+            
+            renderAttractions();
+        });
+
+        // 페이지네이션
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (state.currentPage > 1) {
+                state.currentPage--;
+                renderAttractions();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            const totalPages = Math.ceil(state.filteredAttractions.length / state.itemsPerPage);
+            if (state.currentPage < totalPages) {
+                state.currentPage++;
+                renderAttractions();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        // 모달 닫기 (배경 클릭)
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailModal') closeModal();
+        });
+
+        // 초기 로드
+        window.addEventListener('load', () => {
+            fetchAttractions(1);
+        });
+    </script>
+</body>
+</html>
